@@ -1,6 +1,16 @@
 {
     "roadmap": [
         {
+            "phase": "Python for Data Science",
+            "topics": [
+                "Python Basics (Variables, Loops, Functions)",
+                "Google CoLab Environment",
+                "NumPy & Mathematical Libraries",
+                "Pandas for Data Manipulation",
+                "Matplotlib & Seaborn for Visualization"
+            ]
+        },
+        {
             "phase": "Statistics",
             "topics": [
                 "Descriptive Statistics",
@@ -9,6 +19,16 @@
                 "Hypothesis Testing (p-values, t-tests)",
                 "Correlation vs Causation",
                 "Bayesian Inference"
+            ]
+        },
+        {
+            "phase": "Data Science & Databases",
+            "topics": [
+                "SQL & Relational Databases",
+                "NoSQL Databases",
+                "Data Cleaning & Preprocessing",
+                "Exploratory Data Analysis (EDA)",
+                "Feature Engineering"
             ]
         },
         {
@@ -30,6 +50,16 @@
                 "Reinforcement Learning",
                 "Generative AI & LLMs",
                 "AI Ethics & Safety"
+            ]
+        },
+        {
+            "phase": "Cloud & Deployment",
+            "topics": [
+                "Google Cloud Platform (GCP) Basics",
+                "BigQuery",
+                "Looker & Data Visualization",
+                "Model Deployment & Serving",
+                "MLOps Basics"
             ]
         }
     ]
