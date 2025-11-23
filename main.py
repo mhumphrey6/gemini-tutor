@@ -2,7 +2,12 @@ import sys
 import json
 import time
 import argparse
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
 from tutor_core import TutorSession, ConfigManager
+
+console = Console()
 
 def load_roadmap():
     try:
@@ -13,38 +18,38 @@ def load_roadmap():
 
 def print_roadmap(roadmap):
     if not roadmap:
-        print("Roadmap not found.")
+        console.print("[bold red]Roadmap not found.[/bold red]")
         return
     
-    print("\n--- LEARNING ROADMAP ---")
+    console.print("\n[bold cyan]--- LEARNING ROADMAP ---[/bold cyan]")
     for phase in roadmap.get('roadmap', []):
-        print(f"\n[{phase['phase']}]")
+        console.print(f"\n[bold yellow][{phase['phase']}][/bold yellow]")
         for topic in phase['topics']:
-            print(f"  - {topic}")
-    print("\n------------------------")
+            console.print(f"  - {topic}")
+    console.print("\n[bold cyan]------------------------[/bold cyan]")
 
 def main():
     parser = argparse.ArgumentParser(description="Gemini Tutor AI")
     parser.add_argument('--debug', action='store_true', help="Enable debug mode (shows latency and system logs)")
     args = parser.parse_args()
 
-    print("--- GEMINI TUTOR: AI & STATISTICS ---")
+    console.print(Panel.fit("[bold blue]GEMINI TUTOR: AI & STATISTICS[/bold blue]", border_style="blue"))
     if args.debug:
-        print("[DEBUG MODE ENABLED]")
+        console.print("[bold red][DEBUG MODE ENABLED][/bold red]")
     
     config = ConfigManager()
     if not config.api_key:
-        print("API Key not found in API_KEY.txt. Please add it.")
+        console.print("[bold red]API Key not found in API_KEY.txt. Please add it.[/bold red]")
         input("Press Enter to exit...")
         return
 
     session = TutorSession(api_key=config.api_key, debug=args.debug)
     
     while True:
-        print("\nMAIN MENU")
-        print("1. Start/Resume Session")
-        print("2. View Roadmap")
-        print("3. Exit")
+        console.print("\n[bold green]MAIN MENU[/bold green]")
+        console.print("1. Start/Resume Session")
+        console.print("2. View Roadmap")
+        console.print("3. Exit")
         
         choice = input("Select an option (1-3): ").strip()
         
@@ -52,8 +57,9 @@ def main():
             project = input("Enter Project Name (or press Enter for 'General'): ").strip()
             if not project: project = "General"
             
+            console.print(f"[italic]Starting session for: {project}[/italic]")
             print(session.start_session(project_name=project))
-            print("Type 'quit' or 'menu' to return to main menu.\n")
+            console.print("Type 'quit' or 'menu' to return to main menu.\n")
             
             while True:
                 user_input = input(f"\n[{project}] You: ")
@@ -63,22 +69,23 @@ def main():
                 try:
                     # Show a "thinking" indicator (optional, but nice)
                     if args.debug:
-                        print("Tutor is thinking...", end="\r")
+                        console.print("[dim]Tutor is thinking...[/dim]", end="\r")
                     
                     start_time = time.perf_counter()
                     response = session.send_message(user_input)
                     duration = time.perf_counter() - start_time
                     
-                    print(f"\nTutor: {response}")
+                    console.print("\n[bold green]Tutor:[/bold green]")
+                    console.print(Markdown(response))
                     
                     if args.debug:
-                        print(f"   [Latency: {duration:.2f}s]")
+                        console.print(f"   [dim][Latency: {duration:.2f}s][/dim]")
                     
                     # Log in background
                     session.log_async(user_input, response)
                     
                 except Exception as e:
-                    print(f"\nError: {e}")
+                    console.print(f"\n[bold red]Error: {e}[/bold red]")
         
         elif choice == '2':
             roadmap = load_roadmap()
