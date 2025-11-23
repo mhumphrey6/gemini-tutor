@@ -1,0 +1,10 @@
+# API Key
+API_KEY.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# User Data
+progress_db.csv
+progress_db_backup.csv

@@ -1,0 +1,36 @@
+{
+    "roadmap": [
+        {
+            "phase": "Statistics",
+            "topics": [
+                "Descriptive Statistics",
+                "Probability Basics",
+                "Distributions (Normal, Binomial)",
+                "Hypothesis Testing (p-values, t-tests)",
+                "Correlation vs Causation",
+                "Bayesian Inference"
+            ]
+        },
+        {
+            "phase": "Machine Learning",
+            "topics": [
+                "Linear Regression",
+                "Logistic Regression",
+                "Decision Trees & Random Forests",
+                "Clustering (K-Means)",
+                "Gradient Descent",
+                "Neural Networks Basics"
+            ]
+        },
+        {
+            "phase": "Artificial Intelligence",
+            "topics": [
+                "Deep Learning (CNNs, RNNs)",
+                "Transformers & Attention",
+                "Reinforcement Learning",
+                "Generative AI & LLMs",
+                "AI Ethics & Safety"
+            ]
+        }
+    ]
+}
