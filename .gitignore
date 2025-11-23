@@ -5,12 +5,6 @@ API_KEY.txt
 __pycache__/
 *.pyc
 
-
 # User Data
 progress_db.csv
 progress_db_backup.csv
-user_profile.json
-reports/
-
-# Testing
-.pytest_cache/

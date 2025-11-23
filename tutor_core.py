@@ -55,12 +55,6 @@ class ProgressTracker:
 
     def log_interaction(self, data, tutor_text, project_name="General"):
         with self.lock:
-            # Create backup before writing
-            if os.path.exists(self.db_path):
-                import shutil
-                backup_path = self.db_path.replace('.csv', '_backup.csv')
-                shutil.copy2(self.db_path, backup_path)
-
             with open(self.db_path, 'a', newline='') as f:
                 fieldnames = ['timestamp', 'topic', 'mastery', 'notes', 'full_ai_response', 'project_name']
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -118,8 +112,16 @@ class TutorSession:
         if not self.chat:
             raise ValueError("Session not started.")
         
-        response = self.chat.send_message(user_input)
-        return response.text
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.chat.send_message(user_input)
+                return response.text
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    return f"Error: Failed to get response after {max_retries} attempts. ({e})"
+                time.sleep(1)  # Simple backoff
+        return "Error: Unknown failure."
 
     def generate_report_card(self):
         if not self.chat:
