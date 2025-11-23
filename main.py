@@ -76,6 +76,9 @@ def main():
             while True:
                 user_input = input(f"\n[{project}] You: ")
                 if user_input.lower() in ['quit', 'exit', 'menu']:
+                    console.print("\n[bold yellow]Generating Session Report Card...[/bold yellow]")
+                    report = session.generate_report_card()
+                    console.print(Panel(Markdown(report), title="Session Summary", border_style="green"))
                     break
                 
                 try:

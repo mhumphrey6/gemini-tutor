@@ -55,6 +55,12 @@ class ProgressTracker:
 
     def log_interaction(self, data, tutor_text, project_name="General"):
         with self.lock:
+            # Create backup before writing
+            if os.path.exists(self.db_path):
+                import shutil
+                backup_path = self.db_path.replace('.csv', '_backup.csv')
+                shutil.copy2(self.db_path, backup_path)
+
             with open(self.db_path, 'a', newline='') as f:
                 fieldnames = ['timestamp', 'topic', 'mastery', 'notes', 'full_ai_response', 'project_name']
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -114,6 +120,58 @@ class TutorSession:
         
         response = self.chat.send_message(user_input)
         return response.text
+
+    def generate_report_card(self):
+        if not self.chat:
+            return "No session to report on."
+            
+        history = self.chat.history
+        if not history:
+            return "No interaction history."
+
+        report_model = "gemini-2.0-flash"
+        prompt = f"""
+        Generate a Session Report Card for the student.
+        Project: {self.project_name}
+        
+        Review the conversation history and provide:
+        1. Topics Covered
+        2. Mastery Assessment (1-10)
+        3. Key Takeaways
+        4. Recommended Homework/Next Steps
+        
+        Format as Markdown.
+        """
+        
+        try:
+            # Send the history as context (simplified for this implementation)
+            # In a real scenario, we might send the actual history object or a summary
+            response = self.client.models.generate_content(
+                model=report_model,
+                contents=[
+                    types.Content(parts=[types.Part(text=prompt)]),
+                    # We rely on the model to have context if we were continuing the chat, 
+                    # but here we are using a fresh call. 
+                    # Ideally we should pass the chat history.
+                    # For simplicity, we'll ask the *current* chat to generate it.
+                ]
+            )
+            # Better approach: Ask the existing chat session to generate the report
+            response = self.chat.send_message(prompt)
+            report_content = response.text
+            
+            # Save to file
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"reports/Report_{self.project_name}_{timestamp}.md"
+            os.makedirs("reports", exist_ok=True)
+            
+            with open(filename, "w") as f:
+                f.write(report_content)
+                
+            return f"Report Card generated: {filename}\n\n{report_content}"
+            
+        except Exception as e:
+            return f"Failed to generate report: {e}"
 
     def log_async(self, user_input, tutor_response):
         """Logs the interaction in the background."""
