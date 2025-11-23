@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 from tutor_core import TutorSession, ConfigManager
+from user_profile import UserProfile
 
 console = Console()
 
@@ -44,6 +45,14 @@ def main():
         return
 
     session = TutorSession(api_key=config.api_key, debug=args.debug)
+    user_profile = UserProfile()
+
+    if not user_profile.name:
+        console.print("\n[bold green]Welcome! I don't believe we've met.[/bold green]")
+        name = input("What should I call you? ").strip()
+        user_profile.name = name
+    
+    console.print(f"\n[bold green]Welcome back, {user_profile.name}![/bold green]")
     
     while True:
         console.print("\n[bold green]MAIN MENU[/bold green]")
@@ -54,8 +63,11 @@ def main():
         choice = input("Select an option (1-3): ").strip()
         
         if choice == '1':
-            project = input("Enter Project Name (or press Enter for 'General'): ").strip()
-            if not project: project = "General"
+            default_project = user_profile.last_project or "General"
+            project = input(f"Enter Project Name (default: '{default_project}'): ").strip()
+            if not project: project = default_project
+            
+            user_profile.last_project = project
             
             console.print(f"[italic]Starting session for: {project}[/italic]")
             print(session.start_session(project_name=project))
